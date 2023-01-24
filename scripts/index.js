@@ -1,38 +1,78 @@
-let main = document.querySelector("main");
-cats.forEach(function (cat) {
-  let card = `<div class="${
-    cat.favourite ? "card like" : "card"
-  }" style="background-image: url(${cat.img_link})">
-     <span>${cat.name}</span>
-     </div>`; 
-  main.innerHTML += card;
-});
+// Заполняем карточки из массива
+const main = document.querySelector("main");
+const updCards = function (data) {
+  main.innerHTML = "";
+  data.forEach(function (cat) {
+    if (cat.id) {
+      let card = `<div class="${
+        cat.favourite ? "card like" : "card"
+      }" style="background-image:
+      url(${cat.img_link || "images/cat.jpg"})">
+      <span>${cat.name}</span>
+      </div>`;
+      main.innerHTML += card;
+    }
+  });
+  let cards = document.getElementsByClassName("card");
+  for (let i = 0, cnt = cards.length; i < cnt; i++) {
+    const width = cards[i].offsetWidth;
+    cards[i].style.height = width * 0.6 + "px";
+  }
+};
+updCards(cats)
 
-let cards = document.querySelectorAll(".card");
-
-for (let i = 0, cnt = cards.length; i < cnt; i++) {
-  const width = cards[i].clientWidth;
-  cards[i].style.height = width * 0.6 + "px";
-}
-
+// Слушатели на форме
 let addBtn = document.querySelector("#add");
 let popupForm = document.querySelector("#popup-form");
 let closePopupForm = popupForm.querySelector(".popup-close");
-
 addBtn.addEventListener("click", (e) => {
   e.preventDefault();
+  
   if (!popupForm.classList.contains("active")) {
     popupForm.classList.add("active");
     popupForm.parentElement.classList.add("active");
   }
 });
-
 closePopupForm.addEventListener("click", () => {
   popupForm.classList.remove("active");
   popupForm.parentElement.classList.remove("active");
 });
 
-// const api = new Api("biryukov");
+// Получаем данные из формы создаем из них объект, добавляем в массив
+let form = document.querySelector("form");
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  let body = {};
+  const { elements } = form; 
+  for (let el of elements) {
+    let { name } = el; 
+    if (name) {
+      let { type, checked, value } = el; 
+      let isCheckbox = (type) => ["checkbox"].includes(type); 
+      body[name] = isCheckbox(type) ? checked : value;
+    }
+  }
+  cats.push(body);
+  updCards(cats)
+})
+
+
+
+
+// let api = new Api("alexeev-maxim");
+// addBtn.addEventListener("click", (e) => {
+  //   e.preventDefault();
+  //   if (!popupForm.classList.contains("active")) {
+    //     popupForm.classList.add("active");
+    //     popupForm.parentElement.classList.add("active");
+    //   }
+    // });
+    
+    // closePopupForm.addEventListener("click", () => {
+      //   popupForm.classList.remove("active");
+      //   popupForm.parentElement.classList.remove("active");
+// });
+
 // let form = document.forms[0];
 // form.img_link.addEventListener("change", (e) => {
 //   form.firstElementChild.style.backgroundImage = `url(${e.target.value})`;
